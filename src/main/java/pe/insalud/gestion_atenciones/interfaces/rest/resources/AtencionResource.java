@@ -2,6 +2,7 @@ package pe.insalud.gestion_atenciones.interfaces.rest.resources;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import pe.insalud.gestion_atenciones.domain.model.commands.EliminarAtencionComma
 import pe.insalud.gestion_atenciones.domain.model.entities.Atencion;
 import pe.insalud.gestion_atenciones.domain.model.queries.ObtenerAtencionesPorPacienteEmailQuery;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,6 +43,27 @@ public class AtencionResource {
         return ResponseEntity.ok(
                 atencionQueryService.getByPacienteEmail(new ObtenerAtencionesPorPacienteEmailQuery(email))
         );
+    }
+    // Solo ADMIN: consultar por paciente (id)
+    @GetMapping("/paciente/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Atencion>> getByPaciente(@PathVariable Long id) {
+        return ResponseEntity.ok(atencionQueryService.getByPaciente(id));
+    }
+
+    //Solo ADMIN: consultar por médico (id)
+    @GetMapping("/medico/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Atencion>> getByMedico(@PathVariable Long id) {
+        return ResponseEntity.ok(atencionQueryService.getByMedico(id));
+    }
+
+    // Solo ADMIN: consultar por fecha exacta
+    @GetMapping("/fecha")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Atencion>> getByFecha(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return ResponseEntity.ok(atencionQueryService.getByFecha(fecha));
     }
 
     // Solo ADMIN
