@@ -22,9 +22,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("No existe usuario con email: " + email));
 
         return User.builder()
-                .username(paciente.getEmail().getValue())   // usamos el VO
-                .password(paciente.getContrasena())        // en tu entidad
-                .roles("ADMIN")                            // puedes mapear roles reales después
+                .username(paciente.getEmail().getValue())
+                .password(paciente.getContrasena())
+                .roles(paciente.getRol())
                 .build();
     }
 }

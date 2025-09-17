@@ -1,3 +1,5 @@
 package pe.insalud.gestion_atenciones.domain.model.commands;
 
-public record ActualizarAtencionCommand(Long atencionId, String motivo, Boolean estado) {}
+import pe.insalud.gestion_atenciones.domain.model.valueobjects.Estado;
+
+public record ActualizarAtencionCommand(Long atencionId, String motivo, Estado estado) {}

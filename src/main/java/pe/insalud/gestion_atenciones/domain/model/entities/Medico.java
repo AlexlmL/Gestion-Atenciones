@@ -22,6 +22,7 @@ public class Medico {
     private String nombre;
 
     @Embedded
+    @AttributeOverride(name = "activo", column = @Column(name = "estado"))
     private Estado estado;
 
     @ManyToMany(fetch = FetchType.LAZY)

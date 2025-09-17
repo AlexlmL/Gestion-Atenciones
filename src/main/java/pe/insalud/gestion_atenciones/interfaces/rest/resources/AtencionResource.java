@@ -3,11 +3,16 @@ package pe.insalud.gestion_atenciones.interfaces.rest.resources;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pe.insalud.gestion_atenciones.application.internal.commandservices.AtencionCommandService;
 import pe.insalud.gestion_atenciones.application.internal.queryservices.AtencionQueryService;
 import pe.insalud.gestion_atenciones.domain.model.commands.CrearAtencionCommand;
+import pe.insalud.gestion_atenciones.domain.model.commands.ActualizarAtencionCommand;
+import pe.insalud.gestion_atenciones.domain.model.commands.EliminarAtencionCommand;
 import pe.insalud.gestion_atenciones.domain.model.entities.Atencion;
+import pe.insalud.gestion_atenciones.domain.model.queries.ObtenerAtencionesPorPacienteEmailQuery;
 
 import java.util.List;
 
@@ -19,33 +24,47 @@ public class AtencionResource {
     private final AtencionCommandService atencionCommandService;
     private final AtencionQueryService atencionQueryService;
 
+    // Solo ADMIN
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getAll() {
         return ResponseEntity.ok(atencionQueryService.getAll());
     }
 
+    // Solo PACIENTE autenticado
     @GetMapping("/mias")
     @PreAuthorize("hasRole('PACIENTE')")
-    public ResponseEntity<List<Atencion>> getMine(@RequestParam Long pacienteId) {
-        return ResponseEntity.ok(atencionQueryService.getByPaciente(pacienteId));
+    public ResponseEntity<List<Atencion>> getMine() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return ResponseEntity.ok(
+                atencionQueryService.getByPacienteEmail(new ObtenerAtencionesPorPacienteEmailQuery(email))
+        );
     }
 
+    // Solo ADMIN
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> create(@RequestBody CrearAtencionCommand command) {
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
 
+    // Solo ADMIN
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Atencion> update(@PathVariable Long id, @RequestBody CrearAtencionCommand command) {
+    public ResponseEntity<Atencion> update(@PathVariable Long id,
+                                           @RequestBody ActualizarAtencionCommand body) {
+        // reconstruir comando con el id del path
+        ActualizarAtencionCommand command = new ActualizarAtencionCommand(id, body.motivo(), body.estado());
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
 
+
+    // Solo ADMIN
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        atencionCommandService.handle(new EliminarAtencionCommand(id));
         return ResponseEntity.noContent().build();
     }
 }

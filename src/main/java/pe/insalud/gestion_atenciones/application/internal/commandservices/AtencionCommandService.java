@@ -2,7 +2,9 @@ package pe.insalud.gestion_atenciones.application.internal.commandservices;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pe.insalud.gestion_atenciones.domain.model.commands.ActualizarAtencionCommand;
 import pe.insalud.gestion_atenciones.domain.model.commands.CrearAtencionCommand;
+import pe.insalud.gestion_atenciones.domain.model.commands.EliminarAtencionCommand;
 import pe.insalud.gestion_atenciones.domain.model.entities.Atencion;
 import pe.insalud.gestion_atenciones.domain.model.entities.Medico;
 import pe.insalud.gestion_atenciones.domain.model.entities.Paciente;
@@ -36,5 +38,24 @@ public class AtencionCommandService {
         atencion.setEstado(new Estado(true));
 
         return atencionRepository.save(atencion);
+    }
+    public Atencion handle(ActualizarAtencionCommand command) {
+        Atencion atencion = atencionRepository.findById(command.atencionId())
+                .orElseThrow(() -> new RuntimeException("Atención no encontrada con id: " + command.atencionId()));
+
+        if (command.motivo() != null) {
+            atencion.setMotivo(command.motivo());
+        }
+        if (command.estado() != null) {
+            atencion.setEstado(command.estado());
+        }
+
+        return atencionRepository.save(atencion);
+    }
+    public void handle(EliminarAtencionCommand command) {
+        if (!atencionRepository.existsById(command.atencionId())) {
+            throw new RuntimeException("Atención no encontrada con id: " + command.atencionId());
+        }
+        atencionRepository.deleteById(command.atencionId());
     }
 }

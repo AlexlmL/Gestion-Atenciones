@@ -30,4 +30,7 @@ public class Paciente {
     @Embedded
     @AttributeOverride(name = "activo", column = @Column(name = "estado"))
     private Estado estado;
+
+    @Column(nullable = false)
+    private String rol;
 }
