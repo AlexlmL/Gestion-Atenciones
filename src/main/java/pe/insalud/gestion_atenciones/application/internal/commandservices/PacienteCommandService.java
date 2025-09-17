@@ -18,7 +18,7 @@ public class PacienteCommandService {
         Paciente paciente = new Paciente();
         paciente.setNombre(command.nombre());
         paciente.setEmail(command.email());
-        paciente.setContraseña(command.contraseña());
+        paciente.setContrasena(command.contrasena());
         paciente.setEstado(new Estado(true));
         return pacienteRepository.save(paciente);
     }

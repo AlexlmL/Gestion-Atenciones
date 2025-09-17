@@ -16,7 +16,6 @@ public class AuthResource {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // Aquí delegas a JwtService la validación de credenciales y generación del token
         String token = jwtService.authenticateAndGenerateToken(request.email(), request.password());
         return ResponseEntity.ok(new JwtResponse(token));
     }

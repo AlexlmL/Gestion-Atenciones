@@ -1,18 +1,24 @@
 package pe.insalud.gestion_atenciones.application.internal.outboundservices.acl;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.Claims;
 
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final String jwtSecret = "secretKey123"; // Cambiaría en producción
+    // Clave secreta fija de al menos 64 caracteres
+    private static final String SECRET_KEY =
+            "thisIsASuperSecretKeyThatMustBeAtLeastSixtyFourCharactersLong!!123456";
+
+    private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     private final long jwtExpirationMs = 86400000;   // 24 horas
 
     public String generateToken(Authentication authentication) {
@@ -22,7 +28,7 @@ public class JwtUtil {
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -36,7 +42,11 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private boolean isTokenExpired(String token) {

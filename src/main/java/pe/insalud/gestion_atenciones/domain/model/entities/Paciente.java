@@ -20,11 +20,14 @@ public class Paciente {
 
     private String nombre;
 
+    @Column(name = "contrasena", nullable = false)
+    private String contrasena;
+
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false, unique = true))
     private Email email;
 
-    private String contraseña;
-
     @Embedded
+    @AttributeOverride(name = "activo", column = @Column(name = "estado"))
     private Estado estado;
 }
