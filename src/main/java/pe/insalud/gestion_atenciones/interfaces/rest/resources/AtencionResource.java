@@ -1,5 +1,6 @@
 package pe.insalud.gestion_atenciones.interfaces.rest.resources;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,7 @@ public class AtencionResource {
     // Solo ADMIN
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Atencion> create(@RequestBody CrearAtencionCommand command) {
+    public ResponseEntity<Atencion> create(@Valid @RequestBody CrearAtencionCommand command) {
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
 
@@ -54,11 +55,9 @@ public class AtencionResource {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> update(@PathVariable Long id,
                                            @RequestBody ActualizarAtencionCommand body) {
-        // reconstruir comando con el id del path
-        ActualizarAtencionCommand command = new ActualizarAtencionCommand(id, body.motivo(), body.estado());
+        ActualizarAtencionCommand command = new ActualizarAtencionCommand(id, body.motivo(), body.estado(), body.pacienteId(), body.medicoId());
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
-
 
     // Solo ADMIN
     @DeleteMapping("/{id}")

@@ -40,19 +40,45 @@ public class AtencionCommandService {
         return atencionRepository.save(atencion);
     }
     public Atencion handle(ActualizarAtencionCommand command) {
-        Atencion atencion = atencionRepository.findById(command.atencionId())
-                .orElseThrow(() -> new RuntimeException("Atención no encontrada con id: " + command.atencionId()));
 
+        if (command.atencionId() == null) {
+            throw new IllegalArgumentException("El id de la atención no puede ser nulo");
+        }
+
+        Atencion atencion = atencionRepository.findById(command.atencionId())
+                .orElseThrow(() -> new IllegalArgumentException("Atención no encontrada con id: " + command.atencionId()));
+
+        // Actualizar motivo
         if (command.motivo() != null) {
             atencion.setMotivo(command.motivo());
         }
+
+        // Actualizar estado
         if (command.estado() != null) {
             atencion.setEstado(command.estado());
         }
 
+        // Actualizar paciente si se envía id
+        if (command.pacienteId() != null) {
+            Paciente paciente = pacienteRepository.findById(command.pacienteId())
+                    .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado con id: " + command.pacienteId()));
+            atencion.setPaciente(paciente);
+        }
+
+        // Actualizar médico si se envía id
+        if (command.medicoId() != null) {
+            Medico medico = medicoRepository.findById(command.medicoId())
+                    .orElseThrow(() -> new IllegalArgumentException("Médico no encontrado con id: " + command.medicoId()));
+            atencion.setMedico(medico);
+        }
+
         return atencionRepository.save(atencion);
     }
+
     public void handle(EliminarAtencionCommand command) {
+        if (command.atencionId() == null) {
+            throw new IllegalArgumentException("El id de la atención no puede ser nulo");
+        }
         if (!atencionRepository.existsById(command.atencionId())) {
             throw new RuntimeException("Atención no encontrada con id: " + command.atencionId());
         }
