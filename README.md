@@ -2,35 +2,37 @@
 
 **Backend** en la carpeta principal y en la carpeta insalud se encuentra un zip con el **Frontend**, como se aprecia en la figura siguiente:
 
+---
+[![image.png](https://i.postimg.cc/9QyjgSLC/image.png)](https://postimg.cc/FYFq7PtB)
 [![image.png](https://i.postimg.cc/Fz0VjrsM/image.png)](https://postimg.cc/645ZKNZc)
-
+---
 Eso fue para que todo fuera en un solo repositorio.
 Para el **Frontend** solo se debería extraer en una carpeta y una vez hecho ello correr el comando *npm install* para tener todo para correr el frontend, luego de ello usar *npm run dev*.
 
-Para el backend pues es lo básico. Se debe crear la basedatos con el nombre de **gestion** y cambiar el application.properties. Lo seleccionado en la imagen es lo que se debe cambiar.
-
+Para el backend pues es lo básico. Se clona el repositorio y se debe crear la basedatos con el nombre de **gestion** y cambiar el application.properties. Lo seleccionado en la imagen es lo que se debe cambiar.
+---
 [![image.png](https://i.postimg.cc/15nQ1b7L/image.png)](https://postimg.cc/PPjcmVj4)
-
+---
 Cambiar el puerto de *spring.datasource.url:..* si es que esté está en uso.
 
 ### **IMPORTANTE** Necesitarás esto para no hacer a mano los inserts de data
 
 [Script para la base de datos](https://jumpshare.com/share/dDRxzjNGiw6EGwspaA22)
 
-Por si el link cayó:
+Por si el link se cayó:
 <br>
 ---
 <br>
 -- Admin
 INSERT INTO pacientes (nombre, email, contrasena, estado, rol)
 VALUES ('Admin', 'admin@demo.com', 
-        '$2a$10$7LoOHViXsb/eyFnSu0GEWOGpAeSdlPMatyMsRBpZJTtIzmoqCy0uG', 
+        '$2a$10$b.xZdHayAdCx837iNohHuugtgRKs1b0cmp.Wc4zXenXTj1wwB9iF6', 
         true, 'ADMIN');
 
 -- Paciente
 INSERT INTO pacientes (nombre, email, contrasena, estado, rol)
 VALUES ('Paciente1', 'paciente1@demo.com', 
-        '$2a$10$7LoOHViXsb/eyFnSu0GEWOGpAeSdlPMatyMsRBpZJTtIzmoqCy0uG', 
+        '$2a$10$b.xZdHayAdCx837iNohHuugtgRKs1b0cmp.Wc4zXenXTj1wwB9iF6', 
         true, 'PACIENTE');
 
 
@@ -79,7 +81,7 @@ VALUES
 -- Atencion inicial
 INSERT INTO atenciones (fecha, motivo, activo, paciente_id, medico_id)
 VALUES (
-    '2025-09-18 10:00:00', 
+    '2025-09-30 10:00:00', 
     'Consulta inicial', 
     true, 
     (SELECT id FROM pacientes WHERE nombre='Paciente1'),
@@ -92,11 +94,11 @@ VALUES (
 
 ### **NOTA IMPORTANTE** La poderosa contraseña de ambos usuarios es *1234* en el login no poner lo que se mando a la base de datos
 
-Luego de ello hay dos caminos, revisar el backend endpoint por endpoint o ver el frontend y como funcionan dichos endpoints. 
-
-Para el segundo solo es jugar con en el frontend, sus métodos cruds, los dos tipos de usuario y como están desarrollados los endpoints estipulados por el pdf. Tienen validaciones convencionales y generales para la noción de métodologia de negocio que tengo de este rubro (Y para lo que me dio tiempo).
-
+Luego de ello hay dos caminos, revisar el backend endpoint por endpoint o ver el frontend y como funcionan dichos endpoints.
 Para lo primero es dirigirse a esta carpeta con estos archivos e ir viendo que importa cada resource y sus comentarios. No hay spoilers, vaya y vealo, comentarlo todo me costó una cantidad razonable de tiempo.
+---
 [![image.png](https://i.postimg.cc/gJZTTP2D/image.png)](https://postimg.cc/47XPYqt7)
+---
+Para el segundo solo es jugar con en el frontend, sus métodos cruds, los dos tipos de usuario y como están desarrollados los endpoints estipulados por el pdf. Tienen validaciones convencionales y generales para la noción de métodologia de negocio que tengo de este rubro (Y para lo que me dio tiempo).
 
 Gracias por su tiempo en leer esto y los comentarios del código.

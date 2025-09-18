@@ -19,6 +19,10 @@ import pe.insalud.gestion_atenciones.domain.model.queries.ObtenerAtencionesPorPa
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador REST para gestionar las Atenciones
+ * Define endpoints CRUD y consultas específicas según roles
+ */
 @RestController
 @RequestMapping("/api/atenciones")
 @RequiredArgsConstructor
@@ -27,14 +31,20 @@ public class AtencionResource {
     private final AtencionCommandService atencionCommandService;
     private final AtencionQueryService atencionQueryService;
 
-    // Solo ADMIN
+    /**
+     * Obtener todas las atenciones
+     * Solo accesible para ADMIN
+     */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getAll() {
         return ResponseEntity.ok(atencionQueryService.getAll());
     }
 
-    // Solo PACIENTE autenticado
+    /**
+     * Obtener atenciones del paciente autenticado
+     * Accesible para PACIENTE y ADMIN
+     */
     @GetMapping("/mias")
     @PreAuthorize("hasRole('PACIENTE') or hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getMine() {
@@ -44,21 +54,30 @@ public class AtencionResource {
                 atencionQueryService.getByPacienteEmail(new ObtenerAtencionesPorPacienteEmailQuery(email))
         );
     }
-    // Solo ADMIN: consultar por paciente (id)
+    /**
+     * Obtener atenciones por ID de paciente
+     * Solo ADMIN.
+     */
     @GetMapping("/paciente/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getByPaciente(@PathVariable Long id) {
         return ResponseEntity.ok(atencionQueryService.getByPaciente(id));
     }
 
-    //Solo ADMIN: consultar por médico (id)
+    /**
+     * Obtener atenciones por ID de médico
+     * Solo ADMIN.
+     */
     @GetMapping("/medico/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getByMedico(@PathVariable Long id) {
         return ResponseEntity.ok(atencionQueryService.getByMedico(id));
     }
 
-    // Solo ADMIN: consultar por fecha exacta
+    /**
+     * Obtener atenciones por fecha exacta
+     * Solo ADMIN.
+     */
     @GetMapping("/fecha")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getByFecha(
@@ -66,13 +85,19 @@ public class AtencionResource {
         return ResponseEntity.ok(atencionQueryService.getByFecha(fecha));
     }
 
-    // Solo ADMIN
+    /**
+     * Crear una nueva atención
+     * Solo ADMIN
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> create(@Valid @RequestBody CrearAtencionCommand command) {
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
-    //Para el Put en front
+    /**
+     * Obtener una atención por su ID
+     * Solo ADMIN. Útil para editar en frontend
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> getAtencionById(@PathVariable Long id) {
@@ -81,7 +106,10 @@ public class AtencionResource {
         return ResponseEntity.ok(atencion);
     }
 
-    // Solo ADMIN
+    /**
+     * Actualizar una atención existente
+     * Solo ADMIN
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> update(@PathVariable Long id,
@@ -90,7 +118,10 @@ public class AtencionResource {
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
 
-    // Solo ADMIN
+    /**
+     * Eliminar una atención por ID
+     * Solo ADMIN
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
