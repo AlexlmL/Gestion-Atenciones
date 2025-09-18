@@ -36,7 +36,7 @@ public class AtencionResource {
 
     // Solo PACIENTE autenticado
     @GetMapping("/mias")
-    @PreAuthorize("hasRole('PACIENTE')")
+    @PreAuthorize("hasRole('PACIENTE') or hasRole('ADMIN')")
     public ResponseEntity<List<Atencion>> getMine() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -72,13 +72,21 @@ public class AtencionResource {
     public ResponseEntity<Atencion> create(@Valid @RequestBody CrearAtencionCommand command) {
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
+    //Para el Put en front
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Atencion> getAtencionById(@PathVariable Long id) {
+        Atencion atencion = atencionQueryService.getById(id)
+                .orElseThrow(() -> new RuntimeException("Atención no encontrada con id: " + id));
+        return ResponseEntity.ok(atencion);
+    }
 
     // Solo ADMIN
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Atencion> update(@PathVariable Long id,
                                            @RequestBody ActualizarAtencionCommand body) {
-        ActualizarAtencionCommand command = new ActualizarAtencionCommand(id, body.motivo(), body.estado(), body.pacienteId(), body.medicoId());
+        ActualizarAtencionCommand command = new ActualizarAtencionCommand(id, body.motivo(), body.estado(), body.pacienteId(), body.medicoId(), body.fecha());
         return ResponseEntity.ok(atencionCommandService.handle(command));
     }
 

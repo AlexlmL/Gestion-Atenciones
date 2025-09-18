@@ -71,7 +71,9 @@ public class AtencionCommandService {
                     .orElseThrow(() -> new IllegalArgumentException("Médico no encontrado con id: " + command.medicoId()));
             atencion.setMedico(medico);
         }
-
+        if (command.fecha() != null) {
+            atencion.setFecha(command.fecha().atStartOfDay()); // <-- actualizamos la fecha
+        }
         return atencionRepository.save(atencion);
     }
 
